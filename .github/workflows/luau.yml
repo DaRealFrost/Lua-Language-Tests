@@ -1,54 +1,54 @@
 name: Luau
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/luau.yml
-      - LuauAllOpcodes.luau
-  pull_request:
-    paths:
-      - .github/workflows/luau.yml
-      - LuauAllOpcodes.luau
-  workflow_dispatch:
+    push:
+        branches:
+            - main
+        paths:
+            - .github/workflows/luau.yml
+            - LuauAllOpcodes.luau
+    pull_request:
+        paths:
+            - .github/workflows/luau.yml
+            - LuauAllOpcodes.luau
+    workflow_dispatch:
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+    test:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
 
-      - name: Install Luau
-        id: setup-luau
-        shell: bash
-        run: |
-          set -euo pipefail
-          workdir="$(mktemp -d)"
-          curl -fsSLo "$workdir/luau-ubuntu.zip" https://github.com/luau-lang/luau/releases/latest/download/luau-ubuntu.zip
-          unzip -q "$workdir/luau-ubuntu.zip" -d "$workdir/luau"
-          luau_bin="$(find "$workdir/luau" -maxdepth 2 -type f -name luau | head -n 1)"
+            - name: Install Luau
+              id: setup-luau
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  workdir="$(mktemp -d)"
+                  curl -fsSLo "$workdir/luau-ubuntu.zip" https://github.com/luau-lang/luau/releases/latest/download/luau-ubuntu.zip
+                  unzip -q "$workdir/luau-ubuntu.zip" -d "$workdir/luau"
+                  luau_bin="$(find "$workdir/luau" -maxdepth 2 -type f -name luau | head -n 1)"
 
-          if [[ -z "$luau_bin" ]]; then
-            echo 'Failed to locate the Luau executable after extracting the release archive.' >&2
-            exit 1
-          fi
+                  if [[ -z "$luau_bin" ]]; then
+                    echo 'Failed to locate the Luau executable after extracting the release archive.' >&2
+                    exit 1
+                  fi
 
-          chmod +x "$luau_bin"
-          echo "luau_bin=$luau_bin" >> "$GITHUB_OUTPUT"
-          "$luau_bin" --version
+                  chmod +x "$luau_bin"
+                  echo "luau_bin=$luau_bin" >> "$GITHUB_OUTPUT"
+                  "$luau_bin" --version
 
-      - name: Run Luau opcode script
-        env:
-          LUAU_BIN: ${{ steps.setup-luau.outputs.luau_bin }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          output="$("$LUAU_BIN" LuauAllOpcodes.luau)"
-          printf '%s\n' "$output"
-          printf '%s\n' "$output" | tail -n 1 | grep -qx 'PASSED'
+            - name: Run Luau opcode script
+              env:
+                  LUAU_BIN: ${{ steps.setup-luau.outputs.luau_bin }}
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  output="$("$LUAU_BIN" LuauAllOpcodes.luau)"
+                  printf '%s\n' "$output"
+                  printf '%s\n' "$output" | tail -n 1 | grep -qx 'PASSED'

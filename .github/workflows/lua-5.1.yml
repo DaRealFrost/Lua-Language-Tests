@@ -1,38 +1,38 @@
 name: Lua 5.1
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/lua-5.1.yml
-      - Lua51AllOpcodeCases.lua
-  pull_request:
-    paths:
-      - .github/workflows/lua-5.1.yml
-      - Lua51AllOpcodeCases.lua
-  workflow_dispatch:
+    push:
+        branches:
+            - main
+        paths:
+            - .github/workflows/lua-5.1.yml
+            - Lua51AllOpcodeCases.lua
+    pull_request:
+        paths:
+            - .github/workflows/lua-5.1.yml
+            - Lua51AllOpcodeCases.lua
+    workflow_dispatch:
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+    test:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
 
-      - name: Install Lua 5.1
-        uses: leafo/gh-actions-lua@v12
-        with:
-          luaVersion: 5.1.5
+            - name: Install Lua 5.1
+              uses: leafo/gh-actions-lua@v12
+              with:
+                  luaVersion: 5.1.5
 
-      - name: Run Lua 5.1 opcode script
-        shell: bash
-        run: |
-          set -euo pipefail
-          output="$(lua Lua51AllOpcodeCases.lua)"
-          printf '%s\n' "$output"
-          printf '%s\n' "$output" | tail -n 1 | grep -qx 'PASSED'
+            - name: Run Lua 5.1 opcode script
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  output="$(lua Lua51AllOpcodeCases.lua)"
+                  printf '%s\n' "$output"
+                  printf '%s\n' "$output" | tail -n 1 | grep -qx 'PASSED'
