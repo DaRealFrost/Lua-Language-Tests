@@ -41,7 +41,8 @@ jobs:
 
                   chmod +x "$luau_bin"
                   echo "luau_bin=$luau_bin" >> "$GITHUB_OUTPUT"
-                  "$luau_bin" --version
+                  echo "Installed Luau CLI: $luau_bin"
+                  "$luau_bin" -h >/dev/null
 
             - name: Run Luau opcode script
               env:
